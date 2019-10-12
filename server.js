@@ -4,6 +4,7 @@ const exp = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
 const logger = require("morgan");
+const fs = require("fs");
 
 
 //Define Controllers Here
@@ -46,10 +47,22 @@ const bodyParser = require('body-parser');
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
-const http = require('http');
-const port = 9000;
-console.log(`Server started on port`, port);
-const server = app.listen(port);
+
+// create http Server
+// const http = require('http');
+// const port = 9000;
+// console.log(`Server started on port`, port);
+// const server = app.listen(port);
+
+
+//create https server
+const https = require('https')
+const privateKey = fs.readFileSync('/var/www/html/ecommerce/ssl/privkey1.pem');
+const certificate = fs.readFileSync('/var/www/html/ecommerce/ssl/fullchain1.pem');
+var credentials = {key: privateKey, cert: certificate};
+const secureServer = https.createServer(credentials, app);
+secureServer.listen(5000);
+console.log("server started...");
 
 mongoose.connect('mongodb://127.0.0.1:27017/spurtcommerce', { useNewUrlParser: true })
     .then(() => console.log("Mongodb is connected"))
